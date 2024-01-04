@@ -25,6 +25,22 @@ class MultiAgentSearchAgent(Agent):
 
 
 class AIAgent(MultiAgentSearchAgent):
+    def minimax(self, depth, gameState, player):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+        elif player == 0:
+            return self.getMax(depth , gameState , player)
+
+
+    def getMax(self , depth , gameState , player):
+        maxValue = float('-inf')
+        legalActions = gameState.getLegalActions(player)
+        for action in legalActions :
+            temp = self.minimax(depth,gameState.generateSuccessor(player,action),1)
+            if temp>maxValue:
+                maxValue = temp
+        return maxValue
+
     def getAction(self, gameState: GameState):
         actions = gameState.getLegalActions(0)
         return random.choice(actions)
