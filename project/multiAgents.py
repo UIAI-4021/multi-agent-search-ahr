@@ -1,6 +1,7 @@
 from util import manhattanDistance
 from game import Directions
 import random, util
+import numpy as np
 
 from game import Agent
 from pacman import GameState
@@ -60,4 +61,6 @@ class AIAgent(MultiAgentSearchAgent):
         bestAction = []
         for action in legalActions:
             bestAction.append(self.minimax(0,gameState.generateSuccessor(0,action),0))
-        return max(bestAction)
+        choosen = np.argmax(bestAction)
+        print("Action : "+str(legalActions[choosen]))
+        return legalActions[choosen]
