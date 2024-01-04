@@ -29,32 +29,35 @@ class AIAgent(MultiAgentSearchAgent):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
             return self.evaluationFunction(gameState)
         elif player == 0:
-            return self.getMax(depth , gameState , player)
+            return self.getMax(depth, gameState, player)
         else:
             if player == gameState.getNumAgents():
                 player = 0
             if player == 0:
-                depth+=1
-            return self.getMin(depth,gameState,player)
+                depth += 1
+            return self.getMin(depth, gameState, player)
 
-    def getMax(self , depth , gameState , player):
+    def getMax(self, depth, gameState, player):
         maxValue = float('-inf')
         legalActions = gameState.getLegalActions(player)
-        for action in legalActions :
-            temp = self.minimax(depth,gameState.generateSuccessor(player,action),1)
-            if temp>maxValue:
+        for action in legalActions:
+            temp = self.minimax(depth, gameState.generateSuccessor(player, action), 1)
+            if temp > maxValue:
                 maxValue = temp
         return maxValue
 
-    def getMin(self , depth , gameState , player):
+    def getMin(self, depth, gameState, player):
         minValue = float('inf')
         legalActions = gameState.getLegalActions(player)
-        for action in legalActions :
-            temp = self.minimax(depth,gameState.generateSuccessor(player,action),player+1)
-            if temp<minValue:
+        for action in legalActions:
+            temp = self.minimax(depth, gameState.generateSuccessor(player, action), player + 1)
+            if temp < minValue:
                 minValue = temp
         return minValue
 
     def getAction(self, gameState: GameState):
-        actions = gameState.getLegalActions(0)
-        return random.choice(actions)
+        legalActions = gameState.getLegalActions(0)
+        bestAction = []
+        for action in legalActions:
+            bestAction.append(self.minimax(0,gameState.generateSuccessor(0,action),0))
+        return max(bestAction)
