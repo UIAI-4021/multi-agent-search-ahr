@@ -17,6 +17,13 @@ def scoreEvaluationFunction(currentGameState: GameState):
     return currentGameState.getScore()
 
 
+def getPossibleActions(gameState , player):
+    legalAction = gameState.getLegalActions(player)
+    if Directions.STOP in legalAction:
+        legalAction.remove(Directions.STOP)
+    return legalAction
+
+
 class MultiAgentSearchAgent(Agent):
     def __init__(self, evalFn="scoreEvaluationFunction", depth="2", time_limit="6"):
         self.index = 0  # Pacman is always agent index 0
@@ -40,7 +47,7 @@ class AIAgent(MultiAgentSearchAgent):
 
     def getMax(self, depth, gameState, player):
         maxValue = float('-inf')
-        legalActions = gameState.getLegalActions(player)
+        legalActions = getPossibleActions(gameState,player)
         for action in legalActions:
             temp = self.minimax(depth, gameState.generateSuccessor(player, action), 1)
             if temp > maxValue:
@@ -49,7 +56,7 @@ class AIAgent(MultiAgentSearchAgent):
 
     def getMin(self, depth, gameState, player):
         minValue = float('inf')
-        legalActions = gameState.getLegalActions(player)
+        legalActions = getPossibleActions(gameState , player)
         for action in legalActions:
             temp = self.minimax(depth, gameState.generateSuccessor(player, action), player + 1)
             if temp < minValue:
@@ -57,7 +64,7 @@ class AIAgent(MultiAgentSearchAgent):
         return minValue
 
     def getAction(self, gameState: GameState):
-        legalActions = gameState.getLegalActions(0)
+        legalActions = getPossibleActions(gameState , 0)
         bestAction = []
         for action in legalActions:
             bestAction.append(self.minimax(0,gameState.generateSuccessor(0,action),0))
