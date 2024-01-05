@@ -19,13 +19,25 @@ def scoreEvaluationFunction(currentGameState: GameState):
     foods[18][1] = True
     foodMinDistance = min(calculateDiff(pacmanPosition,foodPos) for foodPos in foods.asList())
 
+    ghostsState = currentGameState.getGhostStates()
+    scaredTimer = [ghost.scaredTimer for ghost in ghostsState]
+
     ghostsDistance = [calculateDiff(pacmanPosition , ghostPos) for ghostPos in ghostsPosition]
     minGhostIndex = np.argmin(ghostsDistance)
     ghostMinDistance = ghostsDistance[minGhostIndex]
+    minScaredTime = scaredTimer[minGhostIndex]
 
     if ghostMinDistance <= 1:
-        return -1000000
-    score = currentGameState.getScore() - foodMinDistance + ghostMinDistance
+        if minScaredTime == 0:
+            return -1000000
+        elif minScaredTime > 0:
+            return 1000000
+    score = currentGameState.getScore() - foodMinDistance
+
+    if minScaredTime > 0:
+        score -= ghostMinDistance
+    else:
+        score += ghostMinDistance
 
     return score
 
