@@ -15,13 +15,19 @@ def scoreEvaluationFunction(currentGameState: GameState):
     pacmanPosition = currentGameState.getPacmanPosition()
     ghostsPosition = currentGameState.getGhostPositions()
     foods = currentGameState.getFood()
-    x = np.array(foods.asList())
-    minDistance = min(calculateDiff(pacmanPosition,foodPos) for foodPos in x)
+    foods[1][9] = True
+    foods[18][1] = True
+    foodMinDistance = min(calculateDiff(pacmanPosition,foodPos) for foodPos in foods.asList())
 
-    if calculateDiff(pacmanPosition , ghostsPosition[0]) == 1:
-        return -10000
+    ghostsDistance = [calculateDiff(pacmanPosition , ghostPos) for ghostPos in ghostsPosition]
+    minGhostIndex = np.argmin(ghostsDistance)
+    ghostMinDistance = ghostsDistance[minGhostIndex]
 
-    return currentGameState.getScore() - minDistance
+    if ghostMinDistance <= 1:
+        return -1000000
+    score = currentGameState.getScore() - foodMinDistance + ghostMinDistance
+
+    return score
 
 
 def getPossibleActions(gameState, player):
