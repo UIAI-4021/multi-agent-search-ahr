@@ -8,16 +8,16 @@ from pacman import GameState
 
 
 def scoreEvaluationFunction(currentGameState: GameState):
-    """
-    This default evaluation function just returns the score of the state.
-    The score is the same one displayed in the Pacman GUI.
+    pacmanPosition = currentGameState.getPacmanPosition()
+    ghostsPosition = currentGameState.getGhostPositions()
 
-    This evaluation function is meant for use with adversarial search agents
-    """
+    if abs(pacmanPosition[0]-ghostsPosition[0][0]) + abs(pacmanPosition[1]-ghostsPosition[0][1]) == 1:
+        return -10000
+
     return currentGameState.getScore()
 
 
-def getPossibleActions(gameState , player):
+def getPossibleActions(gameState, player):
     legalAction = gameState.getLegalActions(player)
     if Directions.STOP in legalAction:
         legalAction.remove(Directions.STOP)
