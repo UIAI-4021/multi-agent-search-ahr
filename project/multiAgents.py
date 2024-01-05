@@ -7,14 +7,21 @@ from game import Agent
 from pacman import GameState
 
 
+def calculateDiff(position1 , position2):
+    return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1])
+
+
 def scoreEvaluationFunction(currentGameState: GameState):
     pacmanPosition = currentGameState.getPacmanPosition()
     ghostsPosition = currentGameState.getGhostPositions()
+    foods = currentGameState.getFood()
+    x = np.array(foods.asList())
+    minDistance = min(calculateDiff(pacmanPosition,foodPos) for foodPos in x)
 
-    if abs(pacmanPosition[0]-ghostsPosition[0][0]) + abs(pacmanPosition[1]-ghostsPosition[0][1]) == 1:
+    if calculateDiff(pacmanPosition , ghostsPosition[0]) == 1:
         return -10000
 
-    return currentGameState.getScore()
+    return currentGameState.getScore() - minDistance
 
 
 def getPossibleActions(gameState, player):
@@ -47,7 +54,7 @@ class AIAgent(MultiAgentSearchAgent):
 
     def getMax(self, depth, gameState, player):
         maxValue = float('-inf')
-        legalActions = getPossibleActions(gameState,player)
+        legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
             temp = self.minimax(depth, gameState.generateSuccessor(player, action), 1)
             if temp > maxValue:
@@ -56,7 +63,7 @@ class AIAgent(MultiAgentSearchAgent):
 
     def getMin(self, depth, gameState, player):
         minValue = float('inf')
-        legalActions = getPossibleActions(gameState , player)
+        legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
             temp = self.minimax(depth, gameState.generateSuccessor(player, action), player + 1)
             if temp < minValue:
@@ -64,10 +71,10 @@ class AIAgent(MultiAgentSearchAgent):
         return minValue
 
     def getAction(self, gameState: GameState):
-        legalActions = getPossibleActions(gameState , 0)
+        legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.minimax(0,gameState.generateSuccessor(0,action),0))
+            bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 0))
         choosen = np.argmax(bestAction)
-        print("Action : "+str(legalActions[choosen]))
+        print("Action : " + str(legalActions[choosen]))
         return legalActions[choosen]
