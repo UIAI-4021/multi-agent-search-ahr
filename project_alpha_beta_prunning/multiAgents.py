@@ -30,8 +30,9 @@ def EvaluationFunction(currentGameState: GameState):
     # Consts
     INF = 100000000.0  # Infinite value for being dead
     WEIGHT_FOOD = 5.0  # Food base value
-    WEIGHT_GHOST = -10.0  # Ghost base value
-    WEIGHT_SCARED_GHOST = 10.0  # Scared ghost base value
+    WEIGHT_GHOST = -5.0  # Ghost base value
+    WEIGHT_SCARED_GHOST = 50.0  # Scared ghost base value
+
 
     # Base on gameState.getScore()
 
