@@ -71,6 +71,18 @@ class AIAgent(MultiAgentSearchAgent):
         else:
             return self.betaPart(depth, gameState, player, alpha, beta)
 
+    def alphaPart(self, depth, gameState, player, alpha, beta):
+        maxValue = float('-inf')
+        legalActions = getPossibleActions(gameState, player)
+        for action in legalActions:
+            temp = self.minimax(depth, gameState.generateSuccessor(player, action), 1)
+            if temp > maxValue:
+                maxValue = temp
+            alpha = max(alpha, maxValue)
+            if beta <= alpha:
+                break
+        return maxValue
+
     def minimax(self, depth, gameState, player):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
             return self.evaluationFunction(gameState)
