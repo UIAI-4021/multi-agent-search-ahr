@@ -23,8 +23,6 @@ from pacman import GameState
 
 def EvaluationFunction(currentGameState: GameState):
 
-    "*** YOUR CODE HERE ***"
-    # util.raiseNotDefined()
     newPos = currentGameState.getPacmanPosition()
     newFood = currentGameState.getFood()
     newGhostStates = currentGameState.getGhostStates()
@@ -96,7 +94,7 @@ class AIAgent(MultiAgentSearchAgent):
         minParty = list(range(1, gameState.getNumAgents()))
 
         if depth == self.depth or gameState.isLose() or gameState.isWin():
-            return EvaluationFunction(gameState) #self.evaluationFunction(gameState)
+            return EvaluationFunction(gameState)
         elif agentIdx in maxParty:
             return self.alphaValue(gameState, depth, agentIdx, alpha, beta)
         elif agentIdx in minParty:
