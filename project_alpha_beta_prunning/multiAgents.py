@@ -19,7 +19,7 @@ import random, util
 from game import Agent
 from pacman import GameState
 
-
+import time
 
 def EvaluationFunction(currentGameState: GameState):
 
@@ -30,10 +30,11 @@ def EvaluationFunction(currentGameState: GameState):
     # Consts
     INF = 100000000.0  # Infinite value for being dead
     WEIGHT_FOOD = 5.0  # Food base value
-    WEIGHT_GHOST = -5.0  # Ghost base value
+    WEIGHT_GHOST = -10.0  # Ghost base value
     WEIGHT_SCARED_GHOST = 10.0  # Scared ghost base value
 
     # Base on gameState.getScore()
+
     score = currentGameState.getScore()
 
     # Evaluate the distance to the closest food
@@ -85,7 +86,7 @@ class AIAgent(MultiAgentSearchAgent):
 
             alpha = max(alpha, curValue)
 
-        print(f"pacmna is at {gameState.getPacmanPosition()} the action is : {nextPacmanAction} the value is {curValue}")
+        #print(f"pacmna is at {gameState.getPacmanPosition()} the action is : {nextPacmanAction} the value is {curValue}")
         return nextPacmanAction
 
     def getNodeValue(self, gameState, depth=0, agentIdx=0, alpha=-1e9, beta=1e9):
