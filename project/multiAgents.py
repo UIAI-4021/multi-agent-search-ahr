@@ -7,10 +7,6 @@ from game import Agent
 from pacman import GameState
 
 
-def calculateDiff(position1, position2):
-    return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1])
-
-
 def scoreEvaluationFunction(currentGameState: GameState):
     newPos = currentGameState.getPacmanPosition()
     newFood = currentGameState.getFood()
@@ -89,6 +85,7 @@ class AIAgent(MultiAgentSearchAgent):
             nextPlayer = 0
         if nextPlayer == 0:
             depth += 1
+
         minValue = float('inf')
         legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
@@ -100,6 +97,20 @@ class AIAgent(MultiAgentSearchAgent):
                 break
         return minValue
 
+    def getAction(self, gameState: GameState):
+        alpha = -999999
+        beta = 999999
+        legalActions = getPossibleActions(gameState, 0)
+        bestAction = []
+        for action in legalActions:
+            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 0,alpha,beta))
+        choosen = np.argmax(bestAction)
+        max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
+        chosenIndex = random.choice(max_indices)
+        return legalActions[chosenIndex]
+
+
+class MiniMaxAgent(MultiAgentSearchAgent):
     def minimax(self, depth, gameState, player):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
             return self.evaluationFunction(gameState)
@@ -131,13 +142,11 @@ class AIAgent(MultiAgentSearchAgent):
                 minValue = temp
         return minValue
 
-    def getAction(self, gameState: GameState):
-        alpha = -999999
-        beta = 999999
+    def getAction(self, gameState:GameState):
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 0,alpha,beta))
+            bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 0))
         choosen = np.argmax(bestAction)
         max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
         chosenIndex = random.choice(max_indices)
