@@ -7,7 +7,7 @@ from game import Agent
 from pacman import GameState
 
 
-def calculateDiff(position1 , position2):
+def calculateDiff(position1, position2):
     return abs(position1[0] - position2[0]) + abs(position1[1] - position2[1])
 
 
@@ -15,23 +15,28 @@ def scoreEvaluationFunction(currentGameState: GameState):
     pacmanPosition = currentGameState.getPacmanPosition()
     ghostsPosition = currentGameState.getGhostPositions()
     foods = currentGameState.getFood()
-    foods[1][9] = True
-    foods[18][1] = True
-    foodMinDistance = min(calculateDiff(pacmanPosition,foodPos) for foodPos in foods.asList())
+    foodMinDistance = 0
+    foodDistances = [calculateDiff(pacmanPosition, foodPos) for foodPos in foods.asList()]
+    if len(foodDistances) > 0:
+        foodMinDistance = min(foodDistances)
 
     ghostsState = currentGameState.getGhostStates()
     scaredTimer = [ghost.scaredTimer for ghost in ghostsState]
+    ghostsDistance = [calculateDiff(pacmanPosition, ghostPos) for ghostPos in ghostsPosition]
 
-    ghostsDistance = [calculateDiff(pacmanPosition , ghostPos) for ghostPos in ghostsPosition]
-    minGhostIndex = np.argmin(ghostsDistance)
-    ghostMinDistance = ghostsDistance[minGhostIndex]
-    minScaredTime = scaredTimer[minGhostIndex]
+    ghostMinDistance = 0
+    minScaredTime = 0
 
-    if ghostMinDistance <= 1:
-        if minScaredTime == 0:
+    if len(ghostsDistance) > 0:
+        minGhostIndex = np.argmin(ghostsDistance)
+        ghostMinDistance = ghostsDistance[minGhostIndex]
+        minScaredTime = scaredTimer[minGhostIndex]
+
+        if ghostMinDistance <= 1 and minScaredTime == 0:
             return -1000000
-        elif minScaredTime > 0:
+        elif ghostMinDistance <= 1 and minScaredTime > 0:
             return 1000000
+
     score = currentGameState.getScore() - foodMinDistance
 
     if minScaredTime > 0:
@@ -60,14 +65,13 @@ class MultiAgentSearchAgent(Agent):
 class AIAgent(MultiAgentSearchAgent):
     def minimax(self, depth, gameState, player):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
-            return self.evaluationFunction(gameState)
-        elif player == 0:
+            x = self.evaluationFunction(gameState)
+            # print(x)
+            # input()
+            return x
+        if player == 0:
             return self.getMax(depth, gameState, player)
         else:
-            if player == gameState.getNumAgents():
-                player = 0
-            if player == 0:
-                depth += 1
             return self.getMin(depth, gameState, player)
 
     def getMax(self, depth, gameState, player):
@@ -80,10 +84,15 @@ class AIAgent(MultiAgentSearchAgent):
         return maxValue
 
     def getMin(self, depth, gameState, player):
+        nextPlayer = player + 1
+        if player == gameState.getNumAgents() - 1:
+            nextPlayer = 0
+        if nextPlayer == 0:
+            depth += 1
         minValue = float('inf')
         legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
-            temp = self.minimax(depth, gameState.generateSuccessor(player, action), player + 1)
+            temp = self.minimax(depth, gameState.generateSuccessor(player, action), nextPlayer)
             if temp < minValue:
                 minValue = temp
         return minValue
@@ -95,4 +104,6 @@ class AIAgent(MultiAgentSearchAgent):
             bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 0))
         choosen = np.argmax(bestAction)
         print("Action : " + str(legalActions[choosen]))
-        return legalActions[choosen]
+        max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
+        chosenIndex = random.choice(max_indices)
+        return legalActions[chosenIndex]
