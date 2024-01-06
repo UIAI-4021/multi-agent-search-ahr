@@ -63,12 +63,17 @@ class MultiAgentSearchAgent(Agent):
 
 
 class AIAgent(MultiAgentSearchAgent):
+    def alphaBeta(self, depth, gameState, player, alpha, beta):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+        if player == 0:
+            return self.alphaPart(depth, gameState, player, alpha, beta)
+        else:
+            return self.betaPart(depth, gameState, player, alpha, beta)
+
     def minimax(self, depth, gameState, player):
         if gameState.isWin() or gameState.isLose() or depth == self.depth:
-            x = self.evaluationFunction(gameState)
-            # print(x)
-            # input()
-            return x
+            return self.evaluationFunction(gameState)
         if player == 0:
             return self.getMax(depth, gameState, player)
         else:
@@ -98,12 +103,13 @@ class AIAgent(MultiAgentSearchAgent):
         return minValue
 
     def getAction(self, gameState: GameState):
+        alpha = -999999
+        beta = 999999
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 0))
+            bestAction.append(self.alphaPart(0, gameState.generateSuccessor(0, action), 0, alpha, beta))
         choosen = np.argmax(bestAction)
-        print("Action : " + str(legalActions[choosen]))
         max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
         chosenIndex = random.choice(max_indices)
         return legalActions[chosenIndex]
