@@ -12,38 +12,38 @@ def calculateDiff(position1, position2):
 
 
 def scoreEvaluationFunction(currentGameState: GameState):
-    pacmanPosition = currentGameState.getPacmanPosition()
-    ghostsPosition = currentGameState.getGhostPositions()
-    foods = currentGameState.getFood()
-    foodMinDistance = 0
-    foodDistances = [calculateDiff(pacmanPosition, foodPos) for foodPos in foods.asList()]
-    if len(foodDistances) > 0:
-        foodMinDistance = min(foodDistances)
+    newPos = currentGameState.getPacmanPosition()
+    newFood = currentGameState.getFood()
+    newGhostStates = currentGameState.getGhostStates()
 
-    ghostsState = currentGameState.getGhostStates()
-    scaredTimer = [ghost.scaredTimer for ghost in ghostsState]
-    ghostsDistance = [calculateDiff(pacmanPosition, ghostPos) for ghostPos in ghostsPosition]
+    # Consts
+    INF = 100000000.0  # Infinite value for being dead
+    WEIGHT_FOOD = 5.0  # Food base value
+    WEIGHT_GHOST = -5.0  # Ghost base value
+    WEIGHT_SCARED_GHOST = 50.0  # Scared ghost base value
 
-    ghostMinDistance = 0
-    minScaredTime = 0
+    # Base on gameState.getScore()
 
-    if len(ghostsDistance) > 0:
-        minGhostIndex = np.argmin(ghostsDistance)
-        ghostMinDistance = ghostsDistance[minGhostIndex]
-        minScaredTime = scaredTimer[minGhostIndex]
+    score = currentGameState.getScore()
 
-        if ghostMinDistance <= 1 and minScaredTime == 0:
-            return -1000000
-        elif ghostMinDistance <= 1 and minScaredTime > 0:
-            return 1000000
-
-    score = currentGameState.getScore() - foodMinDistance
-
-    if minScaredTime > 0:
-        score -= ghostMinDistance
+    # Evaluate the distance to the closest food
+    distancesToFoodList = [util.manhattanDistance(newPos, foodPos) for foodPos in newFood.asList()]
+    if len(distancesToFoodList) > 0:
+        score += WEIGHT_FOOD / min(distancesToFoodList)
     else:
-        score += ghostMinDistance
+        score += WEIGHT_FOOD
 
+    # Evaluate the distance to ghosts
+    for ghost in newGhostStates:
+        distance = manhattanDistance(newPos, ghost.getPosition())
+        if distance > 0:
+            if ghost.scaredTimer > 0:  # If scared, add points
+                score += WEIGHT_SCARED_GHOST / distance
+            else:  # If not, decrease points
+                score += WEIGHT_GHOST / distance
+        else:
+            return -INF  # Pacman is dead at this point
+    # print(score)
     return score
 
 
@@ -137,7 +137,7 @@ class AIAgent(MultiAgentSearchAgent):
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 0))
+            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 0,alpha,beta))
         choosen = np.argmax(bestAction)
         max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
         chosenIndex = random.choice(max_indices)
