@@ -98,8 +98,8 @@ class AIAgent(MultiAgentSearchAgent):
         return minValue
 
     def getAction(self, gameState: GameState):
-        alpha = -999999
-        beta = 999999
+        alpha = float('-inf')
+        beta = float('inf')
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
