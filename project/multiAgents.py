@@ -1,4 +1,3 @@
-from util import manhattanDistance
 from game import Directions
 import random, util
 import numpy as np
@@ -31,7 +30,7 @@ def scoreEvaluationFunction(currentGameState: GameState):
 
     # Evaluate the distance to ghosts
     for ghost in newGhostStates:
-        distance = manhattanDistance(newPos, ghost.getPosition())
+        distance = util.manhattanDistance(newPos, ghost.getPosition())
         if distance > 0:
             if ghost.scaredTimer > 0:  # If scared, add points
                 score += WEIGHT_SCARED_GHOST / distance
@@ -87,7 +86,8 @@ class AIAgent(MultiAgentSearchAgent):
         minValue = float('inf')
         legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
-            minValue = min(minValue, self.alphaBeta(depth, gameState.generateSuccessor(player, action), nextPlayer, alpha, beta))
+            minValue = min(minValue,
+                           self.alphaBeta(depth, gameState.generateSuccessor(player, action), nextPlayer, alpha, beta))
             if minValue <= alpha:
                 break
             beta = min(beta, minValue)
