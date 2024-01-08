@@ -71,12 +71,10 @@ class AIAgent(MultiAgentSearchAgent):
         maxValue = float('-inf')
         legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
-            temp = self.alphaBeta(depth, gameState.generateSuccessor(player, action), 1 , alpha , beta)
-            if temp > maxValue:
-                maxValue = temp
-            alpha = max(alpha, maxValue)
-            if beta <= alpha:
+            maxValue = max(maxValue, self.alphaBeta(depth, gameState.generateSuccessor(player, action), 1, alpha, beta))
+            if maxValue >= beta:
                 break
+            alpha = max(alpha, maxValue)
         return maxValue
 
     def betaPart(self, depth, gameState, player, alpha, beta):
@@ -89,12 +87,10 @@ class AIAgent(MultiAgentSearchAgent):
         minValue = float('inf')
         legalActions = getPossibleActions(gameState, player)
         for action in legalActions:
-            temp = self.alphaBeta(depth, gameState.generateSuccessor(player, action), nextPlayer , alpha , beta)
-            if temp < minValue:
-                minValue = temp
-            beta = min(beta, minValue)
-            if beta <= alpha:
+            minValue = min(minValue, self.alphaBeta(depth, gameState.generateSuccessor(player, action), nextPlayer, alpha, beta))
+            if minValue <= alpha:
                 break
+            beta = min(beta, minValue)
         return minValue
 
     def getAction(self, gameState: GameState):
@@ -103,7 +99,7 @@ class AIAgent(MultiAgentSearchAgent):
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 1,alpha,beta))
+            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 1, alpha, beta))
         choosen = np.argmax(bestAction)
         max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
         chosenIndex = random.choice(max_indices)
@@ -142,7 +138,7 @@ class MiniMaxAgent(MultiAgentSearchAgent):
                 minValue = temp
         return minValue
 
-    def getAction(self, gameState:GameState):
+    def getAction(self, gameState: GameState):
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
