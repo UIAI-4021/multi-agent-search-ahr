@@ -103,7 +103,7 @@ class AIAgent(MultiAgentSearchAgent):
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 0,alpha,beta))
+            bestAction.append(self.alphaBeta(0, gameState.generateSuccessor(0, action), 1,alpha,beta))
         choosen = np.argmax(bestAction)
         max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
         chosenIndex = random.choice(max_indices)
@@ -146,7 +146,7 @@ class MiniMaxAgent(MultiAgentSearchAgent):
         legalActions = getPossibleActions(gameState, 0)
         bestAction = []
         for action in legalActions:
-            bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 0))
+            bestAction.append(self.minimax(0, gameState.generateSuccessor(0, action), 1))
         choosen = np.argmax(bestAction)
         max_indices = [index for index in range(len(bestAction)) if bestAction[index] == bestAction[choosen]]
         chosenIndex = random.choice(max_indices)
